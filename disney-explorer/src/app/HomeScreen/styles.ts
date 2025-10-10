@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: "center",
 		padding: 16,
-		paddingTop: 30,
+		paddingTop: 50,
 		backgroundColor: "#f5f5f5",
 	},
 	header: {
@@ -26,5 +26,6 @@ export const styles = StyleSheet.create({
 		alignItems: "center",
 		flexDirection: "row",
 		gap: 10,
+		paddingTop: 10,
 	},
 });
