@@ -3,7 +3,8 @@ import { DisneyItem, type DisneyProps } from "@/components/DisneyItem";
 import { Input } from "@/components/input";
 import axios from "axios";
 import { useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { FavoriteScreen } from "../FavoriteScreen/FavoriteScreen";
 import { styles } from "./styles";
 
 type DisneyApiItem = {
@@ -20,6 +21,11 @@ export default function HomeScreen() {
 	const [characters, setCharacters] = useState<DisneyProps[]>([]);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
+	const [showFavorites, setShowFavorites] = useState(false);
+
+	if (showFavorites) {
+		return <FavoriteScreen goBack={() => setShowFavorites(false)} />;
+	}
 
 	async function fetchCharacter() {
 		if (!name.trim()) {
@@ -63,6 +69,20 @@ export default function HomeScreen() {
 
 	return (
 		<View style={styles.container}>
+			<TouchableOpacity
+				onPress={() => setShowFavorites(true)}
+				style={{
+					marginTop: 20,
+					backgroundColor: "transparent",
+					paddingVertical: 10,
+					paddingHorizontal: 20,
+					borderRadius: 8,
+				}}
+			>
+				<Text style={{ color: "#ffd000ff", fontWeight: "bold" }}>
+					Ir para Favoritos
+				</Text>
+			</TouchableOpacity>
 			<View style={styles.header}>
 				<Text style={styles.title}>Seja bem-vindo ao Disney Explorer!</Text>
 				<Text style={styles.subtitle}>Busque pelo seu personagem favorito</Text>

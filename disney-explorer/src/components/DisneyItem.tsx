@@ -1,4 +1,14 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { DisneyStorage } from "@/storage/DisneyStorage";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
+import {
+	Alert,
+	Image,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+} from "react-native";
 
 export type DisneyProps = {
 	id: string;
@@ -10,12 +20,51 @@ export type DisneyProps = {
 };
 
 export function DisneyItem({
+	id,
 	name,
 	imageUrl,
 	films,
 	shortFilms,
 	tvShows,
 }: DisneyProps) {
+	const [favorited, setFavorited] = useState(false);
+
+	useEffect(() => {
+		const checkFavorite = async () => {
+			const data = await DisneyStorage.get();
+			const exists = data.some((fav) => fav.id === id);
+			setFavorited(exists);
+		};
+		checkFavorite();
+	}, [id]);
+
+	async function handleFavorite() {
+		try {
+			const data = await DisneyStorage.get();
+			const exists = data.some((fav) => fav.id === id);
+
+			if (exists) {
+				await DisneyStorage.remove(id);
+				setFavorited(false);
+				Alert.alert("Removido!", `${name} foi removido dos favoritos.`);
+			} else {
+				await DisneyStorage.save({
+					id,
+					name,
+					imageUrl,
+					films,
+					shortFilms,
+					tvShows,
+				});
+				setFavorited(true);
+				Alert.alert("Salvo!", `${name} foi adicionado aos favoritos.`);
+			}
+		} catch (error) {
+			console.error("Erro ao alterar favorito:", error);
+			Alert.alert("Erro", "Não foi possível atualizar os favoritos.");
+		}
+	}
+
 	return (
 		<View style={styles.card}>
 			<Image
@@ -47,6 +96,13 @@ export function DisneyItem({
 				<Text style={styles.txt}>
 					{tvShows && tvShows.length > 0 ? tvShows.join(", ") : "Sem séries"}
 				</Text>
+				<TouchableOpacity onPress={handleFavorite}>
+					<MaterialIcons
+						name={favorited ? "star" : "star-border"}
+						size={24}
+						color={favorited ? "#FFD700" : "#888"}
+					/>
+				</TouchableOpacity>
 			</View>
 		</View>
 	);
